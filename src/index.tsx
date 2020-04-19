@@ -65,6 +65,7 @@ class Board extends React.Component<BoardPropsInterface, BoardStateInterface> {
   }
 
   render() {
+    countStone(this.state.squares);
     const winner = calculateWinner(this.state.squares);
     let status;
     if (winner) {
@@ -108,6 +109,25 @@ ReactDOM.render(
   <Game />,
   document.getElementById('root')
 );
+
+function countStone(squares: Array<number>[]) {
+  var black: number = 0;
+  var white: number = 0;
+
+  for (const values of squares) {
+    for (const value of values) {
+      if (value === 1) {
+        black++;
+      } else if (value === -1) {
+        white++;
+      }
+    }
+  }
+
+  console.log("black=", black)
+  console.log("white=", white)
+  return null;
+}
 
 function calculateWinner(squares: Array<number>[]) {
   const lines = [
