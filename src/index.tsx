@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 interface SquarePropsInterface {
-  value: string;
+  value: number;
   onClick: () => void
 }
 
@@ -19,11 +19,11 @@ function Square(props: SquarePropsInterface){
 }
 
 interface BoardPropsInterface{
-  squares: Array<string>
+  squares: Array<number>[]
 }
 
 interface BoardStateInterface{
-  squares: Array<string>;
+  squares: Array<number>[];
   xIsNext: boolean;
 }
 
@@ -31,27 +31,36 @@ class Board extends React.Component<BoardPropsInterface, BoardStateInterface> {
   constructor(props: BoardPropsInterface) {
     super(props);
     this.state = {
-      squares: Array(9).fill(""),
+      squares: [
+                [0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0],
+                [0,0,0,1,-1,0,0,0],
+                [0,0,0,-1,1,0,0,0],
+                [0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0],
+              ],
       xIsNext: true,
     }
   }
 
-  handleClick(i: number) {
-    const squares: Array<string> = this.state.squares.slice();
-    if (calculateWinner(squares) || squares[i]) {
+  handleClick(i: number, j:number) {
+    const squares: Array<number>[] = this.state.squares.slice();
+    if (calculateWinner(squares) || squares[i][j]) {
       return;
     }
-    squares[i] = this.state.xIsNext ? "X" : "O";
+    squares[i][j] = this.state.xIsNext ? 1 : -1;
     this.setState({
       squares: squares,
       xIsNext: !this.state.xIsNext
     });
   }
 
-  renderSquare(i: number) {
+  renderSquare(i: number, j:number) {
     return <Square
-      value={this.state.squares[i]}
-      onClick={() => this.handleClick(i)}
+      value={this.state.squares[i][j]}
+      onClick={() => this.handleClick(i, j)}
     />;
   }
 
@@ -61,27 +70,17 @@ class Board extends React.Component<BoardPropsInterface, BoardStateInterface> {
     if (winner) {
       status = "Winner: " + winner;
     } else {
-      status = "Next Player: " + (this.state.xIsNext ? "X" : "O");
+      status = "Next Player: " + (this.state.xIsNext ? 1 : -1);
     }
 
     return (
       <div>
         <div className="status">{status}</div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
+        { [0,1,2,3,4,5,6,7].map((i) =>
+          <div className="board-row">
+            { [0,1,2,3,4,5,6,7].map((j) => this.renderSquare(i, j))}
+          </div>
+        )}
       </div>
     );
   }
@@ -110,7 +109,7 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
-function calculateWinner(squares: Array<string>) {
+function calculateWinner(squares: Array<number>[]) {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
