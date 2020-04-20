@@ -31,30 +31,68 @@ class Board extends React.Component<BoardPropsInterface, BoardStateInterface> {
   constructor(props: BoardPropsInterface) {
     super(props);
     this.state = {
-      squares: [
-                [0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0],
-                [0,0,0,1,-1,0,0,0],
-                [0,0,0,-1,1,0,0,0],
-                [0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0],
-              ],
-      xIsNext: true,
+      squares: boardInit(),
+      xIsNext: false,
     }
   }
 
-  handleClick(i: number, j:number) {
-    const squares: Array<number>[] = this.state.squares.slice();
-    if (calculateWinner(squares) || squares[i][j]) {
-      return;
+  reverseEightLine(i: number, j: number, stoneColor: number) {
+    var squares = JSON.parse(JSON.stringify(this.state.squares))
+    var isUserStone = false
+    var reversedFlag = false
+    var reversedLineCount = 0
+    var directionList = [
+                          [-1, -1], [ 0, -1], [ 1, -1],
+                          [-1,  0],           [ 1,  0],
+                          [-1,  1], [ 0,  1], [ 1,  1]
+                        ]
+    for (const direction of directionList) {
+      const squaresBackUp = JSON.parse(JSON.stringify(squares))
+      var x = j
+      var y = i
+      isUserStone = false
+      reversedFlag = false
+      while (true){
+        x += direction[0]
+        y += direction[1]
+        if (x < 0 || 7 < x || y < 0 || 7 < y) {
+          break
+        }
+        if (squares[y][x] === 0) {
+          break
+        }
+        if (squares[y][x] === stoneColor) {
+          isUserStone = true
+          break
+        }
+        squares[y][x] = stoneColor
+        reversedFlag = true
+      }
+      if ((!reversedFlag || !isUserStone)) {
+        squares = squaresBackUp
+      } else {
+        reversedLineCount += 1
+      }
     }
-    squares[i][j] = this.state.xIsNext ? 1 : -1;
-    this.setState({
-      squares: squares,
-      xIsNext: !this.state.xIsNext
-    });
+    if (reversedLineCount > 0) {
+      squares[i][j] = stoneColor
+      return squares
+    }
+    return false
+  }
+
+  handleClick(i: number, j:number) {
+    const stoneColor = this.state.xIsNext ? 1 : -1;
+    for (var dir=0; dir<9; dir++) {
+      const newSquares = this.reverseEightLine(i, j, stoneColor)
+      if (!newSquares) {
+        return
+      }
+      this.setState({
+        squares: newSquares,
+        xIsNext: !this.state.xIsNext
+      });
+    }
   }
 
   renderSquare(i: number, j:number) {
@@ -71,7 +109,7 @@ class Board extends React.Component<BoardPropsInterface, BoardStateInterface> {
     if (winner) {
       status = "Winner: " + winner;
     } else {
-      status = "Next Player: " + (this.state.xIsNext ? 1 : -1);
+      status = "Next Player: " + (this.state.xIsNext ? "黒" : "白");
     }
 
     return (
@@ -92,7 +130,7 @@ class Game extends React.Component {
     return (
       <div className="game">
         <div className="game-board">
-          <Board squares={Array(9).fill("")}/>
+          <Board squares={boardInit()}/>
         </div>
         <div className="game-info">
           <div>{/* status */}</div>
@@ -127,6 +165,19 @@ function countStone(squares: Array<number>[]) {
   console.log("black=", black)
   console.log("white=", white)
   return null;
+}
+
+function boardInit() {
+  return [
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,1,-1,0,0,0],
+            [0,0,0,-1,1,0,0,0],
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0],
+          ]
 }
 
 function calculateWinner(squares: Array<number>[]) {
