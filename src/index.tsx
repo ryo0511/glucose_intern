@@ -8,12 +8,24 @@ interface SquarePropsInterface {
 }
 
 function Square(props: SquarePropsInterface){
+  let stoneColor: string
+  switch (props.value) {
+    case 1:
+      stoneColor = "black-stone"
+      break
+    case -1:
+      stoneColor = "white-stone"
+      break
+    default:
+      stoneColor = "no-stone"
+      break
+  }
   return (
     <button
       className="square"
       onClick={props.onClick}
     >
-      {props.value}
+      <div className={stoneColor} />
     </button>
   );
 }
@@ -37,19 +49,19 @@ class Board extends React.Component<BoardPropsInterface, BoardStateInterface> {
   }
 
   reverseEightLine(i: number, j: number, stoneColor: number) {
-    var squares = JSON.parse(JSON.stringify(this.state.squares))
-    var isUserStone = false
-    var reversedFlag = false
-    var reversedLineCount = 0
-    var directionList = [
+    let squares = JSON.parse(JSON.stringify(this.state.squares))
+    let isUserStone = false
+    let reversedFlag = false
+    let reversedLineCount = 0
+    let directionList = [
                           [-1, -1], [ 0, -1], [ 1, -1],
                           [-1,  0],           [ 1,  0],
                           [-1,  1], [ 0,  1], [ 1,  1]
                         ]
     for (const direction of directionList) {
       const squaresBackUp = JSON.parse(JSON.stringify(squares))
-      var x = j
-      var y = i
+      let x = j
+      let y = i
       isUserStone = false
       reversedFlag = false
       while (true){
@@ -83,7 +95,7 @@ class Board extends React.Component<BoardPropsInterface, BoardStateInterface> {
 
   handleClick(i: number, j:number) {
     const stoneColor = this.state.xIsNext ? 1 : -1;
-    for (var dir=0; dir<9; dir++) {
+    for (let dir=0; dir<9; dir++) {
       const newSquares = this.reverseEightLine(i, j, stoneColor)
       if (!newSquares) {
         return
@@ -149,8 +161,8 @@ ReactDOM.render(
 );
 
 function countStone(squares: Array<number>[]) {
-  var black: number = 0;
-  var white: number = 0;
+  let black: number = 0;
+  let white: number = 0;
 
   for (const values of squares) {
     for (const value of values) {
