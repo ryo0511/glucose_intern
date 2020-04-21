@@ -53,7 +53,7 @@ class Board extends React.Component<BoardPropsInterface, BoardStateInterface> {
     let isUserStone = false
     let reversedFlag = false
     let reversedLineCount = 0
-    let directionList = [
+    const directionList = [
                           [-1, -1], [ 0, -1], [ 1, -1],
                           [-1,  0],           [ 1,  0],
                           [-1,  1], [ 0,  1], [ 1,  1]
@@ -115,11 +115,10 @@ class Board extends React.Component<BoardPropsInterface, BoardStateInterface> {
   }
 
   render() {
-    countStone(this.state.squares);
     const winner = calculateWinner(this.state.squares);
-    let status;
+    let status: string;
     if (winner) {
-      status = "Winner: " + winner;
+      status = winner;
     } else {
       status = "Next Player: " + (this.state.xIsNext ? "黒" : "白");
     }
@@ -176,7 +175,7 @@ function countStone(squares: Array<number>[]) {
 
   console.log("black=", black)
   console.log("white=", white)
-  return null;
+  return [black, white];
 }
 
 function boardInit() {
@@ -193,21 +192,17 @@ function boardInit() {
 }
 
 function calculateWinner(squares: Array<number>[]) {
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-  for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+  const [black, white] = countStone(squares)
+  const stoneNumber = black + white
+  if (stoneNumber == 64) {
+    if (black < white) {
+      return "白の勝利！"
     }
+    if (black === white) {
+      return "引き分け"
+    }
+    return "黒の勝利！"
+
   }
   return null;
 }
