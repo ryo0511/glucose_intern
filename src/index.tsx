@@ -49,6 +49,9 @@ class Board extends React.Component<BoardPropsInterface, BoardStateInterface> {
   }
 
   reverseEightLine(i: number, j: number, stoneColor: number) {
+    if (this.state.squares[i][j] !== 0) {
+      return false
+    }
     let squares = JSON.parse(JSON.stringify(this.state.squares))
     let isUserStone = false
     let reversedFlag = false
