@@ -191,7 +191,7 @@ function boardInit() {
 function calculateWinner(squares: Array<number>[]) {
   const [black, white] = countStone(squares)
   const stoneNumber = black + white
-  if (stoneNumber == 64) {
+  if (stoneNumber === 64) {
     if (black < white) {
       return '白の勝利！'
     }
