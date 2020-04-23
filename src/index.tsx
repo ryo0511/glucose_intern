@@ -16,6 +16,9 @@ function Square(props: SquarePropsInterface) {
     case -1:
       stoneColor = 'white-stone'
       break
+    case 2:
+      stoneColor = "can-put"
+      break
     default:
       stoneColor = 'no-stone'
       break
@@ -45,8 +48,60 @@ class Board extends React.Component<BoardPropsInterface, BoardStateInterface> {
     }
   }
 
+  canPut(i: number, j: number, stoneColor: number) {
+    if (this.state.squares[i][j] !== 0 && this.state.squares[i][j] !== 2) {
+      return false
+    }
+    let squares = this.state.squares
+    let isUserStone = false
+    let reversedFlag = false
+    let reversedLineCount = 0
+    const directionList = [
+      [-1, -1],
+      [0, -1],
+      [1, -1],
+      [-1, 0],
+      [1, 0],
+      [-1, 1],
+      [0, 1],
+      [1, 1],
+    ]
+    for (const direction of directionList) {
+      let x = j
+      let y = i
+      isUserStone = false
+      reversedFlag = false
+      while (true) {
+        x += direction[0]
+        y += direction[1]
+        if (x < 0 || 7 < x || y < 0 || 7 < y) {
+          break
+        }
+        if (squares[y][x] === 0 || squares[y][x] === 2) {
+          break
+        }
+        if (squares[y][x] === stoneColor) {
+          isUserStone = true
+          break
+        }
+        reversedFlag = true
+      }
+      if (!reversedFlag || !isUserStone) {
+      } else {
+        reversedLineCount += 1
+      }
+    }
+    if (reversedLineCount > 0) {
+      squares[i][j] = 2
+      return true
+    } else {
+      squares[i][j] = 0
+      return false
+    }
+  }
+
   reverseEightLine(i: number, j: number, stoneColor: number) {
-    if (this.state.squares[i][j] !== 0) {
+    if (this.state.squares[i][j] !== 2) {
       return false
     }
     let squares = JSON.parse(JSON.stringify(this.state.squares))
@@ -113,6 +168,8 @@ class Board extends React.Component<BoardPropsInterface, BoardStateInterface> {
   }
 
   renderSquare(i: number, j: number) {
+    const stoneColor = this.state.xIsNext ? 1 : -1
+    this.canPut(i, j, stoneColor)
     return <Square value={this.state.squares[i][j]} onClick={() => this.handleClick(i, j)} />
   }
 
