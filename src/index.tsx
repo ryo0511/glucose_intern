@@ -130,7 +130,7 @@ class Board extends React.Component<BoardPropsInterface, BoardStateInterface> {
         if (x < 0 || 7 < x || y < 0 || 7 < y) {
           break
         }
-        if (squares[y][x] === 0) {
+        if (squares[y][x] === 0 || squares[y][x] === 2) {
           break
         }
         if (squares[y][x] === stoneColor) {
