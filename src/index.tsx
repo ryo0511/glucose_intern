@@ -17,7 +17,7 @@ function Square(props: SquarePropsInterface) {
       stoneColor = 'white-stone'
       break
     case 2:
-      stoneColor = "can-put"
+      stoneColor = 'can-put'
       break
     default:
       stoneColor = 'no-stone'
@@ -155,22 +155,33 @@ class Board extends React.Component<BoardPropsInterface, BoardStateInterface> {
 
   handleClick(i: number, j: number) {
     const stoneColor = this.state.xIsNext ? 1 : -1
-    for (let dir = 0; dir < 9; dir++) {
-      const newSquares = this.reverseEightLine(i, j, stoneColor)
-      if (!newSquares) {
-        return
-      }
-      this.setState({
-        squares: newSquares,
-        xIsNext: !this.state.xIsNext,
-      })
+    const newSquares = this.reverseEightLine(i, j, stoneColor)
+    if (!newSquares) {
+      return
     }
+    this.setState({
+      squares: newSquares,
+      xIsNext: !this.state.xIsNext,
+    })
   }
 
   renderSquare(i: number, j: number) {
     const stoneColor = this.state.xIsNext ? 1 : -1
     this.canPut(i, j, stoneColor)
     return <Square value={this.state.squares[i][j]} onClick={() => this.handleClick(i, j)} />
+  }
+
+  pass() {
+    this.setState({
+      xIsNext: !this.state.xIsNext,
+    })
+  }
+
+  boardInit() {
+    this.setState({
+      squares: boardInit(),
+      xIsNext: false,
+    })
   }
 
   render() {
@@ -188,9 +199,37 @@ class Board extends React.Component<BoardPropsInterface, BoardStateInterface> {
         {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
           <div className="board-row">{[0, 1, 2, 3, 4, 5, 6, 7].map((j) => this.renderSquare(i, j))}</div>
         ))}
+        <Button
+          stoneCounts={() => countStone(this.state.squares)}
+          onClickPass={() =>this.pass()}
+          onClickInit={() => this.boardInit()}
+        />
       </div>
     )
   }
+}
+
+interface ButtonPropsInterface {
+  stoneCounts: () => Array<number>
+  onClickPass: () => void
+  onClickInit: () => void
+}
+
+function Button(props: ButtonPropsInterface) {
+  const [black, white, nextPlayerCanPut] = props.stoneCounts()
+  if (black + white === 64) {
+    return (
+    <button onClick={props.onClickInit}> 最初から </button>
+  )
+  }
+  console.log("nextPlayerCanPut", nextPlayerCanPut)
+  if (nextPlayerCanPut === 0) {
+    return (
+      <button onClick={props.onClickPass}> パス </button>
+    )
+  }
+  return <div />
+
 }
 
 class Game extends React.Component {
@@ -216,6 +255,7 @@ ReactDOM.render(<Game />, document.getElementById('root'))
 function countStone(squares: Array<number>[]) {
   let black: number = 0
   let white: number = 0
+  let canPutPlace: number = 0
 
   for (const values of squares) {
     for (const value of values) {
@@ -223,13 +263,13 @@ function countStone(squares: Array<number>[]) {
         black++
       } else if (value === -1) {
         white++
+      } else if (value === 2) {
+        canPutPlace++
       }
     }
   }
 
-  console.log('black=', black)
-  console.log('white=', white)
-  return [black, white]
+  return [black, white, canPutPlace]
 }
 
 function boardInit() {
@@ -247,8 +287,8 @@ function boardInit() {
 
 function calculateWinner(squares: Array<number>[]) {
   const [black, white] = countStone(squares)
-  const stoneNumber = black + white
-  if (stoneNumber === 64) {
+  const stoneCount = black + white
+  if (stoneCount === 64 || black === 0 || white === 0) {
     if (black < white) {
       return '白の勝利！'
     }
