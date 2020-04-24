@@ -201,7 +201,7 @@ class Board extends React.Component<BoardPropsInterface, BoardStateInterface> {
         ))}
         <Button
           stoneCounts={() => countStone(this.state.squares)}
-          onClickPass={() =>this.pass()}
+          onClickPass={() => this.pass()}
           onClickInit={() => this.boardInit()}
         />
       </div>
@@ -218,18 +218,13 @@ interface ButtonPropsInterface {
 function Button(props: ButtonPropsInterface) {
   const [black, white, nextPlayerCanPut] = props.stoneCounts()
   if (black + white === 64) {
-    return (
-    <button onClick={props.onClickInit}> 最初から </button>
-  )
+    return <button onClick={props.onClickInit}> 最初から </button>
   }
-  console.log("nextPlayerCanPut", nextPlayerCanPut)
+  console.log('nextPlayerCanPut', nextPlayerCanPut)
   if (nextPlayerCanPut === 0) {
-    return (
-      <button onClick={props.onClickPass}> パス </button>
-    )
+    return <button onClick={props.onClickPass}> パス </button>
   }
   return <div />
-
 }
 
 class Game extends React.Component {
