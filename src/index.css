@@ -52,6 +52,14 @@ ol, ul {
   background: #FFFFFF;
 }
 
+.can-put {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #000000;
+}
+
 .kbd-navigation .square:focus {
   background: #ddd;
 }
