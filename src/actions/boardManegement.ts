@@ -21,7 +21,7 @@ const directionList = [
 ]
 
 export function canPut(i: number, j: number,
-  stoneColor: number, squares: Array<number>[]) {
+  stoneColor: number, squares: Array<number>[]): boolean {
   if (squares[i][j] !== 0 && squares[i][j] !== 2) {
     return false
   }
@@ -63,7 +63,7 @@ export function canPut(i: number, j: number,
 }
 
 export function reverseEightLine(i: number, j: number,
-  stoneColor: number, squares: Array<number>[]) {
+  stoneColor: number, squares: Array<number>[]): Array<number>[] | boolean {
   if (squares[i][j] !== 2) {
     return false
   }
@@ -104,7 +104,7 @@ export function reverseEightLine(i: number, j: number,
   }
   return false
 }
-export function countStone(squares: Array<number>[]) {
+export function countStone(squares: Array<number>[]): Array<number> {
   let black: number = 0
   let white: number = 0
   let canPutPlace: number = 0
@@ -124,7 +124,7 @@ export function countStone(squares: Array<number>[]) {
   return [black, white, canPutPlace]
 }
 
-export function calculateWinner(squares: Array<number>[]) {
+export function calculateWinner(squares: Array<number>[]): string | null {
   const [black, white] = countStone(squares)
   const stoneCount = black + white
   if (stoneCount === 64 || black === 0 || white === 0) {
